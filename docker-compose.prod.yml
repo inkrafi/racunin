@@ -1,0 +1,141 @@
+# Production stack: web (nginx + php-fpm), queue worker, scheduler, PostgreSQL + pgvector, Redis.
+# Required env (e.g. in a .env file next to this compose file, never baked into the image):
+#   APP_KEY, APP_URL, DB_PASSWORD, GEMINI_API_KEY (optional), GOOGLE_CLIENT_ID/SECRET (optional)
+# TLS should terminate at a reverse proxy (Caddy, Traefik, Cloudflare, a load balancer) in front of "app".
+
+x-app-env: &app-env
+  APP_NAME: Racunin
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${APP_KEY:?APP_KEY is required}
+  APP_URL: ${APP_URL:?APP_URL is required}
+  APP_LOCALE: id
+  LOG_CHANNEL: stderr
+  LOG_LEVEL: ${LOG_LEVEL:-warning}
+  DB_CONNECTION: pgsql
+  DB_HOST: db
+  DB_PORT: 5432
+  DB_DATABASE: ${DB_DATABASE:-affiliate_system}
+  DB_USERNAME: ${DB_USERNAME:-postgres}
+  DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+  REDIS_CLIENT: phpredis
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  QUEUE_CONNECTION: redis
+  CACHE_STORE: redis
+  SESSION_DRIVER: redis
+  GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+  GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GOOGLE_REDIRECT_URI: ${APP_URL}/auth/google/callback
+  AFFILIATE_EXTRA_DOMAINS: ${AFFILIATE_EXTRA_DOMAINS:-}
+  AFFILIATE_OPEN_IN_APP: ${AFFILIATE_OPEN_IN_APP:-false}
+
+x-app-base: &app-base
+  image: racunin-app:latest
+  restart: unless-stopped
+  environment: *app-env
+  volumes:
+    - app_storage:/var/www/html/storage
+  networks:
+    - affiliate_network
+
+services:
+  # ============================================================================
+  # Web Application (Nginx + PHP-FPM) — the only container that runs migrations
+  # ============================================================================
+  app:
+    <<: *app-base
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: affiliate_app
+    ports:
+      - "${APP_PORT:-80}:80"
+    environment:
+      <<: *app-env
+      RUN_MIGRATIONS: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ============================================================================
+  # Queue Worker (click tracking, embeddings, daily AI insights)
+  # ============================================================================
+  worker:
+    <<: *app-base
+    container_name: affiliate_worker
+    command: php artisan queue:work redis --sleep=2 --tries=3 --max-time=3600 --timeout=90
+    stop_grace_period: 90s
+    healthcheck:
+      disable: true
+    depends_on:
+      app:
+        condition: service_healthy
+
+  # ============================================================================
+  # Task Scheduler (runs the daily AI Agent and other scheduled commands)
+  # ============================================================================
+  scheduler:
+    <<: *app-base
+    container_name: affiliate_scheduler
+    command: php artisan schedule:work
+    healthcheck:
+      disable: true
+    depends_on:
+      app:
+        condition: service_healthy
+
+  # ============================================================================
+  # PostgreSQL with pgvector (semantic search)
+  # ============================================================================
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: affiliate_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-affiliate_system}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-affiliate_system}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - affiliate_network
+
+  # ============================================================================
+  # Redis (cache, sessions, queue)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: affiliate_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - affiliate_network
+
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+  app_storage:
+    driver: local
+
+networks:
+  affiliate_network:
+    driver: bridge

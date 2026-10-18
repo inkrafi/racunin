@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EBDDF7"/><stop offset="1" stop-color="#D8C2EE"/></linearGradient>
+    <linearGradient id="liquid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B57BE0"/><stop offset="1" stop-color="#5B1A7A"/></linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <circle cx="90" cy="96" r="40" fill="#FFFFFF" opacity=".55"/>
+  <circle cx="318" cy="280" r="20" fill="#C6F432" opacity=".7"/>
+  <ellipse cx="200" cy="354" rx="86" ry="11" fill="#2B0B3F" opacity=".14"/>
+  <rect x="176" y="50" width="48" height="44" rx="8" fill="#FFFFFF"/>
+  <rect x="186" y="90" width="28" height="24" fill="#E9E4EE"/>
+  <path d="M150 140 Q150 112 186 112 L214 112 Q250 112 250 140 L250 330 Q250 352 228 352 L172 352 Q150 352 150 330 Z" fill="#FFFFFF" opacity=".55"/>
+  <path d="M154 190 L246 190 L246 328 Q246 348 226 348 L174 348 Q154 348 154 328 Z" fill="url(#liquid)"/>
+  <rect x="166" y="150" width="10" height="170" rx="5" fill="#FFFFFF" opacity=".5"/>
+  <rect x="170" y="232" width="60" height="64" rx="6" fill="#FFFFFF"/>
+  <text x="200" y="262" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="14" fill="#2B0B3F">AHA</text>
+  <text x="200" y="282" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="11" fill="#6D5A78">BHA 2%</text>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 764 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE4EF"/><stop offset=".6" stop-color="#F3E3FB"/><stop offset="1" stop-color="#E3F7A0"/></linearGradient>
+    <linearGradient id="glass" x1="0" x2="1"><stop offset="0" stop-color="#F9B3CF"/><stop offset=".55" stop-color="#FF5C98"/><stop offset="1" stop-color="#D0105F"/></linearGradient>
+  </defs>
+  <rect width="764" height="400" fill="url(#bg)"/>
+  <circle cx="610" cy="96" r="70" fill="#C6F432" opacity=".55"/>
+  <circle cx="132" cy="300" r="40" fill="#FFFFFF" opacity=".7"/>
+  <circle cx="190" cy="96" r="16" fill="#FF3D8B" opacity=".45"/>
+  <circle cx="660" cy="300" r="22" fill="#FFFFFF" opacity=".8"/>
+  <rect x="470" y="226" width="150" height="50" rx="25" fill="#2B0B3F"/>
+  <text x="545" y="258" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="22" fill="#C6F432">-35%</text>
+  <ellipse cx="382" cy="356" rx="100" ry="13" fill="#2B0B3F" opacity=".12"/>
+  <g transform="translate(182 4)">
+    <rect x="178" y="56" width="44" height="60" rx="22" fill="#2B0B3F"/>
+    <rect x="164" y="108" width="72" height="34" rx="6" fill="#43145E"/>
+    <rect x="138" y="138" width="124" height="212" rx="26" fill="url(#glass)"/>
+    <rect x="152" y="154" width="13" height="170" rx="6.5" fill="#FFFFFF" opacity=".35"/>
+    <rect x="158" y="208" width="84" height="94" rx="8" fill="#FFFFFF"/>
+    <text x="200" y="242" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="12.5" fill="#2B0B3F">NIACINAMIDE</text>
+    <text x="200" y="278" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="28" fill="#E0186C">10%</text>
+  </g>
+</svg>

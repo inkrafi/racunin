@@ -1,0 +1,40 @@
+# Secrets & local environment (inject env vars at runtime instead)
+.env
+.env.*
+!.env.example
+!.env.production.example
+auth.json
+
+# Dependencies are installed inside the image
+/vendor
+/node_modules
+
+# Build output is produced by the frontend stage
+/public/build
+/public/hot
+/public/storage
+
+# Runtime data, caches & logs
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/pail
+/bootstrap/cache/*.php
+/database/database.sqlite
+
+# Tooling, tests & VCS
+.git
+.github
+.idea
+.vscode
+.claude
+.phpunit.cache
+.phpunit.result.cache
+/tests
+/coverage
+
+# Local scratch files
+original_analytics.txt
+output.txt
+*.log

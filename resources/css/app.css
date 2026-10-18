@@ -1,0 +1,189 @@
+@import 'tailwindcss';
+
+@source '../../resources/views';
+@source '../views';
+@source '../../app';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+/*
+ * Racunin design tokens: "Ramuan"
+ * Racun = brand pink, primary actions and links. Plum = dark brand surfaces (app bar, hero).
+ * Lime = highlight only (marker, a dot on plum), never body text. Alert = destructive / inactive.
+ * Store colours never appear; buy buttons use the catalog accent.
+ */
+@theme {
+    --font-sans: 'Figtree', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Bricolage Grotesque', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+
+    --color-paper: #F5EFFA;
+    --color-surface: #FFFFFF;
+    --color-ink: #22092F;
+    --color-ink-soft: #6D5A78;
+    --color-ink-faint: #9C8BA8;
+    --color-line: #E7DCEF;
+    --color-line-strong: #D3C2E0;
+    --color-racun: #E0186C;
+    --color-racun-deep: #B30F53;
+    --color-racun-wash: #FFE4EF;
+    --color-plum: #2B0B3F;
+    --color-plum-soft: #5B1A7A;
+    --color-plum-ink: #D9C6E8;
+    --color-lime: #C6F432;
+    --color-marker: #C6F432;
+    --color-alert: #C2410C;
+    --color-alert-wash: #FBEDE6;
+    --color-shopee: #D0391B;
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-paper text-ink antialiased;
+    }
+
+    h1, h2, h3, .font-display {
+        font-family: var(--font-display);
+        font-optical-sizing: auto;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-racun);
+        outline-offset: 2px;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    /* Buttons */
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer select-none disabled:opacity-60 disabled:cursor-not-allowed;
+    }
+    .btn-sm {
+        @apply h-8 px-3 text-[13px] gap-1.5;
+    }
+    .btn-primary {
+        @apply bg-racun text-white hover:bg-racun-deep shadow-[0_6px_16px_-8px_rgba(224,24,108,0.7)];
+    }
+    .btn-secondary {
+        @apply bg-surface text-ink border border-line-strong hover:bg-paper;
+    }
+    .btn-ghost {
+        @apply text-ink-soft hover:text-ink hover:bg-paper;
+    }
+    .btn-danger {
+        @apply bg-alert text-white hover:bg-[#9A3412];
+    }
+    .icon-btn {
+        @apply inline-flex items-center justify-center size-9 rounded-lg text-ink-soft hover:text-ink hover:bg-paper transition-colors cursor-pointer;
+    }
+
+    /* Form fields */
+    .field {
+        @apply w-full h-10 px-3 rounded-lg border border-line-strong bg-surface text-sm text-ink placeholder:text-ink-faint transition-shadow outline-none focus:border-racun focus:ring-3 focus:ring-racun/15;
+    }
+    textarea.field {
+        @apply h-auto py-2.5 leading-relaxed resize-y;
+    }
+    select.field {
+        @apply pr-8;
+    }
+    .field-label {
+        @apply block text-sm font-semibold text-ink mb-1.5;
+    }
+    .field-hint {
+        @apply text-[13px] text-ink-soft mt-1.5;
+    }
+    .field-error {
+        @apply text-[13px] text-alert mt-1.5 font-medium;
+    }
+
+    /* Surfaces */
+    .panel {
+        @apply bg-surface border border-line rounded-2xl;
+    }
+
+    /* Segmented control (filters, date ranges) */
+    .segmented {
+        @apply inline-flex p-0.5 rounded-lg bg-paper border border-line;
+    }
+    .segmented > button {
+        @apply h-8 px-3 rounded-md text-[13px] font-semibold text-ink-soft hover:text-ink transition-colors cursor-pointer;
+    }
+    .segmented > button[aria-pressed='true'] {
+        @apply bg-surface text-ink shadow-[0_1px_2px_rgba(43,11,63,0.12)];
+    }
+
+    /* Status pill */
+    .status {
+        @apply inline-flex items-center gap-1.5 text-[13px] font-semibold;
+    }
+    .status::before {
+        content: '';
+        @apply size-2 rounded-full bg-current;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+        @apply fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6 bg-ink/45;
+    }
+    .modal-sheet {
+        @apply w-full bg-surface rounded-t-2xl sm:rounded-2xl max-h-[92vh] flex flex-col overflow-hidden shadow-[0_24px_60px_-12px_rgba(43,11,63,0.35)];
+    }
+
+    /* Lime highlighter: the one bold visual gesture. Use for a single key value per screen. */
+    .marker {
+        background-image:
+            linear-gradient(100deg, rgba(198, 244, 50, 0) 0.9%, #C6F432 2.4%, rgba(198, 244, 50, 0.85) 5.8%, rgba(198, 244, 50, 0.6) 93%, rgba(198, 244, 50, 0.85) 96%, rgba(198, 244, 50, 0) 98%),
+            linear-gradient(183deg, rgba(198, 244, 50, 0) 0%, rgba(198, 244, 50, 0.3) 7.9%, rgba(198, 244, 50, 0) 15%);
+        padding: 0.05em 0.3em;
+        margin: 0 -0.15em;
+        border-radius: 0.5em 0.25em;
+        -webkit-box-decoration-break: clone;
+        box-decoration-break: clone;
+    }
+
+    .num {
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+/* Short link as an identity: muted domain, bold slug */
+.shortlink-domain {
+    @apply text-ink-faint font-medium;
+}
+.shortlink-slug {
+    @apply text-ink font-bold;
+}
+
+/* Loading skeleton */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.skeleton {
+    background: linear-gradient(90deg, #EFE6F5 25%, #E5D9EE 50%, #EFE6F5 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 0.5rem;
+}
+
+/* Motion that answers an action (modal open, toast) */
+@keyframes sheetIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-sheet { animation: sheetIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

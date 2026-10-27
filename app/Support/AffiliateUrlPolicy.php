@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Enums\ProductType;
 use Illuminate\Support\Facades\Config;
 
 class AffiliateUrlPolicy
@@ -29,7 +30,7 @@ class AffiliateUrlPolicy
     /**
      * Identify the marketplace a URL belongs to.
      *
-     * @return array{key: string, label: ?string, home: ?string, android_package: ?string}|null Null for unknown or extra domains.
+     * @return array{key: string, label: ?string, home: ?string, android_package: ?string, type: ProductType}|null Null for unknown or extra domains.
      */
     public function platformFor(?string $url): ?array
     {
@@ -47,12 +48,21 @@ class AffiliateUrlPolicy
                         'label' => $platform['label'],
                         'home' => $platform['home'],
                         'android_package' => $platform['android_package'] ?? null,
+                        'type' => ProductType::tryFrom($platform['type'] ?? '') ?? ProductType::MARKETPLACE,
                     ];
                 }
             }
         }
 
         return null;
+    }
+
+    /**
+     * Kind of product a URL points to; unknown and extra domains count as marketplace.
+     */
+    public function typeFor(?string $url): ProductType
+    {
+        return $this->platformFor($url)['type'] ?? ProductType::MARKETPLACE;
     }
 
     /**

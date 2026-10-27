@@ -85,8 +85,10 @@ class GeminiService
 
     /**
      * Generate structured JSON output from Gemini.
+     *
+     * Long-form outputs (landing pages, scripts) can pass a larger $timeout than the default.
      */
-    public function generateJson(string $prompt, ?string $systemInstruction = null): array
+    public function generateJson(string $prompt, ?string $systemInstruction = null, ?int $timeout = null): array
     {
         if (!$this->isConfigured()) {
             throw new \RuntimeException('Google Gemini API Key belum dikonfigurasi di file .env (GEMINI_API_KEY).');
@@ -118,7 +120,7 @@ class GeminiService
         }
 
         try {
-            $response = Http::timeout($this->timeout)
+            $response = Http::timeout($timeout ?? $this->timeout)
                 ->withHeaders(['Content-Type' => 'application/json', 'x-goog-api-key' => $this->apiKey])
                 ->post($endpoint, $payload);
 

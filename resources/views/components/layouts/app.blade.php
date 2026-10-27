@@ -74,6 +74,7 @@
         @php
             $navItems = [
                 ['route' => 'dashboard', 'label' => 'Link', 'icon' => 'link'],
+                ['route' => 'dashboard.ai-agent', 'label' => 'AI Agent', 'icon' => 'wand'],
                 ['route' => 'dashboard.analytics', 'label' => 'Statistik', 'icon' => 'chart'],
                 ['route' => 'dashboard.commissions', 'label' => 'Komisi', 'icon' => 'coin'],
                 ['route' => 'dashboard.catalog', 'label' => 'Katalog', 'icon' => 'store'],
@@ -137,7 +138,7 @@
             {{ $slot }}
         </main>
 
-        <nav class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-surface border-t border-line grid grid-cols-5 pb-[env(safe-area-inset-bottom)]" aria-label="Navigasi utama">
+        <nav class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-surface border-t border-line grid grid-cols-6 pb-[env(safe-area-inset-bottom)]" aria-label="Navigasi utama">
             @foreach ($navItems as $item)
                 @php $active = request()->routeIs($item['route']); @endphp
                 <a href="{{ route($item['route']) }}"
@@ -153,7 +154,7 @@
             @endforeach
         </nav>
 
-    @elseif (request()->routeIs('catalog.public*') || request()->is('/'))
+    @elseif (request()->routeIs('catalog.public*') || request()->routeIs('lp.*') || request()->is('/'))
         {{-- Public catalog and landing page draw their own chrome --}}
         <main class="flex-1">
             {{ $slot }}

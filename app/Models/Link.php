@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\LinkStatus;
+use App\Enums\ProductType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,6 +30,7 @@ class Link extends Model
         'slug',
         'sub_id',
         'product_ref',
+        'product_type',
         'status',
         'description',
         'og_title',
@@ -41,6 +43,11 @@ class Link extends Model
         'is_featured',
         'sort_order',
         'ai_captions',
+        'ai_landing_page',
+        'lp_published_at',
+        'ai_ad_copy',
+        'ai_video_scripts',
+        'ai_reference',
     ];
 
     /**
@@ -52,11 +59,17 @@ class Link extends Model
     {
         return [
             'status' => LinkStatus::class,
+            'product_type' => ProductType::class,
             'price' => 'decimal:2',
             'is_in_catalog' => 'boolean',
             'is_featured' => 'boolean',
             'sort_order' => 'integer',
             'ai_captions' => 'array',
+            'ai_landing_page' => 'array',
+            'lp_published_at' => 'datetime',
+            'ai_ad_copy' => 'array',
+            'ai_video_scripts' => 'array',
+            'ai_reference' => 'array',
         ];
     }
 
@@ -72,14 +85,18 @@ class Link extends Model
                 $link->product_ref = ProductRef::fromUrl($link->original_url);
             }
 
+            if ($link->isDirty('original_url') && ! $link->isDirty('product_type')) {
+                $link->product_type = app(AffiliateUrlPolicy::class)->typeFor($link->original_url);
+            }
+
             $link->sub_id = ProductRef::normalizeSubId($link->sub_id) ?? ProductRef::subIdFromUrl($link->original_url);
         });
 
         static::saved(function (Link $link) {
-            // Single place for redirect cache invalidation (also clears a negative "missing" entry on create)
-            Cache::forget(static::redirectCacheKey($link->slug));
+            // Single place for slug cache invalidation (also clears a negative "missing" entry on create)
+            static::forgetSlugCaches($link->slug);
             if ($link->wasChanged('slug') && $link->getOriginal('slug')) {
-                Cache::forget(static::redirectCacheKey($link->getOriginal('slug')));
+                static::forgetSlugCaches($link->getOriginal('slug'));
             }
 
             // Check if relevant fields for embedding have changed, or if it's newly created
@@ -89,8 +106,14 @@ class Link extends Model
         });
 
         static::deleted(function (Link $link) {
-            Cache::forget(static::redirectCacheKey($link->slug));
+            static::forgetSlugCaches($link->slug);
         });
+    }
+
+    protected static function forgetSlugCaches(string $slug): void
+    {
+        Cache::forget(static::redirectCacheKey($slug));
+        Cache::forget(static::landingPageCacheKey($slug));
     }
 
     /**
@@ -99,6 +122,14 @@ class Link extends Model
     public static function redirectCacheKey(string $slug): string
     {
         return "links:redirect:{$slug}";
+    }
+
+    /**
+     * Cache key for the public landing page lookup of a slug.
+     */
+    public static function landingPageCacheKey(string $slug): string
+    {
+        return "links:lp:{$slug}";
     }
 
     /**
@@ -186,6 +217,36 @@ class Link extends Model
         return Attribute::make(
             get: fn () => url($this->slug),
         );
+    }
+
+    /**
+     * Public URL of the AI landing page (only reachable once published).
+     */
+    protected function landingPageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => route('lp.show', $this->slug),
+        );
+    }
+
+    /**
+     * Where the landing page's buy buttons go, tagged so these clicks show up as their own source:
+     * the short link, or the tracked checkout hop when the affiliate set a custom checkout URL.
+     */
+    protected function landingPageCtaUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => (! empty($this->ai_landing_page['cta_url']) ? route('lp.go', $this->slug) : url($this->slug))
+                . '?utm_source=landing_page&utm_medium=racunin',
+        );
+    }
+
+    /**
+     * Whether the landing page is live for visitors.
+     */
+    public function hasPublishedLandingPage(): bool
+    {
+        return $this->lp_published_at !== null && ! empty($this->ai_landing_page) && $this->isActive();
     }
 
     /**

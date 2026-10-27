@@ -65,15 +65,7 @@ class RedirectController extends Controller
         }
 
         // Asynchronously dispatch click tracking to queue (zero redirect latency)
-        $event = ClickEventData::fromRequest($request);
-        TrackClickJob::dispatch(
-            $link['id'],
-            $link['user_id'],
-            $event->ipAddress,
-            $event->referrer,
-            $event->userAgent,
-            $event->clickedAt->format('Y-m-d H:i:s'),
-        );
+        dispatch(TrackClickJob::fromEvent($link['id'], $link['user_id'], ClickEventData::fromRequest($request)));
 
         // Android in-app browsers: try the store app first, the web page is the fallback
         $appOverride = $request->query('app');

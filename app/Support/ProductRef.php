@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Enums\ProductType;
+
 /**
  * Identifiers inside marketplace URLs that also appear in commission reports,
  * used to attribute imported orders to a short link.
@@ -18,6 +20,11 @@ class ProductRef
     public static function fromUrl(?string $url): ?string
     {
         if (empty($url)) {
+            return null;
+        }
+
+        // Digital storefront paths aren't item IDs and could false-match; those links match on Sub ID only
+        if (app(AffiliateUrlPolicy::class)->typeFor($url) === ProductType::DIGITAL) {
             return null;
         }
 

@@ -27,6 +27,10 @@ class LinkClick extends Model
         'browser',
         'platform',
         'user_agent',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
+        'utm_content',
     ];
 
     /**

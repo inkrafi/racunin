@@ -145,6 +145,7 @@
                                             <span class="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-racun"></span>
                                         @endif
                                     </button>
+                                    <a href="{{ route('dashboard.ai-agent', ['link' => $link->id]) }}" class="icon-btn" aria-label="AI Agent" title="AI Agent: landing page, iklan, script video"><x-icon name="wand" /></a>
                                     <button type="button" wire:click="openEditModal({{ $link->id }})" class="icon-btn" aria-label="Edit link" title="Edit"><x-icon name="edit" /></button>
                                     <button type="button" wire:click="confirmDelete({{ $link->id }})" class="icon-btn hover:!text-alert hover:!bg-alert-wash" aria-label="Hapus link" title="Hapus"><x-icon name="trash" /></button>
                                 </div>

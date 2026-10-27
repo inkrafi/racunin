@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Create or update Default Administrator
         $admin = User::firstOrCreate(
-            ['email' => 'admin@affiliate.com'],
+            ['email' => ' '],
             [
                 'name' => 'System Administrator',
                 'password' => Hash::make('admin123'),

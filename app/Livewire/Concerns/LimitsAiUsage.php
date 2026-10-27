@@ -19,7 +19,7 @@ trait LimitsAiUsage
      */
     protected function consumeAiQuota(): ?string
     {
-        $rateLimitKey = 'ai-overview:' . Auth::id();
+        $rateLimitKey = $this->aiQuotaKey();
 
         if (RateLimiter::tooManyAttempts($rateLimitKey, 15)) {
             $seconds = RateLimiter::availableIn($rateLimitKey);
@@ -30,6 +30,21 @@ trait LimitsAiUsage
         RateLimiter::hit($rateLimitKey, 600);
 
         return null;
+    }
+
+    /**
+     * Give back the request taken by consumeAiQuota() when the AI call failed.
+     */
+    protected function refundAiQuota(): void
+    {
+        if (RateLimiter::attempts($this->aiQuotaKey()) > 0) {
+            RateLimiter::decrement($this->aiQuotaKey(), 600);
+        }
+    }
+
+    protected function aiQuotaKey(): string
+    {
+        return 'ai-overview:' . Auth::id();
     }
 
     /**

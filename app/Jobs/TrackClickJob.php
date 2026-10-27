@@ -21,6 +21,8 @@ class TrackClickJob implements ShouldQueue
         public ?string $referrer,
         public ?string $userAgent,
         public string $clickedAtString,
+        // Last with a default so jobs queued before this field existed still unserialize
+        public array $utm = [],
     ) {}
 
     public static function fromEvent(int $linkId, int $userId, ClickEventData $event): self
@@ -32,6 +34,7 @@ class TrackClickJob implements ShouldQueue
             referrer: $event->referrer,
             userAgent: $event->userAgent,
             clickedAtString: $event->clickedAt->format('Y-m-d H:i:s'),
+            utm: $event->utm,
         );
     }
 
@@ -45,6 +48,7 @@ class TrackClickJob implements ShouldQueue
             referrer: $this->referrer,
             userAgent: $this->userAgent,
             clickedAt: new \DateTimeImmutable($this->clickedAtString),
+            utm: $this->utm ?? [],
         );
 
         $recordClickAction->execute($this->linkId, $this->userId, $event);

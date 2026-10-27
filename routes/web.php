@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/analytics', \App\Livewire\Dashboard\Analytics::class)->name('dashboard.analytics');
     Route::get('/dashboard/tes-link', \App\Livewire\Dashboard\LinkTester::class)->name('dashboard.link-test');
     Route::get('/dashboard/komisi', \App\Livewire\Dashboard\Commissions::class)->name('dashboard.commissions');
+    Route::get('/dashboard/ai-agent', \App\Livewire\Dashboard\AiAgent::class)->name('dashboard.ai-agent');
 
     Route::post('/logout', function (Request $request) {
         Auth::logout();
@@ -54,6 +55,16 @@ Route::middleware('auth')->group(function () {
 Route::get('/@{username}', PublicCatalog::class)->name('catalog.public.at');
 Route::get('/catalog/{username}', PublicCatalog::class)->name('catalog.public');
 Route::get('/u/{username}', PublicCatalog::class)->name('catalog.public.u');
+
+// Public AI landing pages (pre-sell pages written by the AI Agent)
+Route::get('/lp/{slug}', [\App\Http\Controllers\LandingPageController::class, 'show'])
+    ->where('slug', '^[a-zA-Z0-9_-]+$')
+    ->middleware('throttle:180,1')
+    ->name('lp.show');
+Route::get('/lp/{slug}/go', [\App\Http\Controllers\LandingPageController::class, 'go'])
+    ->where('slug', '^[a-zA-Z0-9_-]+$')
+    ->middleware('throttle:180,1')
+    ->name('lp.go');
 
 // Public Affiliate Short Link Redirection
 // Placed at the end to allow dedicated routes to resolve first

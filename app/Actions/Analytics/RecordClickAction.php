@@ -43,6 +43,11 @@ class RecordClickAction
                 'browser' => $uaInfo['browser'],
                 'platform' => $uaInfo['platform'],
                 'user_agent' => $event->userAgent,
+                // Raw log only: UTM is never folded into link_click_summaries (one row per link per day)
+                'utm_source' => $event->utm['source'] ?? null,
+                'utm_medium' => $event->utm['medium'] ?? null,
+                'utm_campaign' => $event->utm['campaign'] ?? null,
+                'utm_content' => $event->utm['content'] ?? null,
             ]);
 
             if ($isBot) {

@@ -9,7 +9,8 @@ class GenerateUniqueSlugAction
 {
     protected const RESERVED_SLUGS = [
         'login', 'register', 'logout', 'dashboard', 'admin', 'api', 'up', 'build',
-        'storage', 'catalog', 'bio', 'settings', 'analytics', 'links', 'user', 'profile'
+        'storage', 'catalog', 'bio', 'settings', 'analytics', 'links', 'user', 'profile',
+        'health', 'u', 'paket', 'lead', 'tes-link', 'komisi', 'discovery',
     ];
 
     public function __construct(
